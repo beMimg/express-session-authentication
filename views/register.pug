@@ -1,0 +1,9 @@
+extends layout 
+
+block content 
+  form(action="", method="post") 
+    label(for="username") Username:
+    input(type="text" name="username")
+    label(for="password") Password:
+    input(type="password" name="password")  
+    button(type="submit") Register

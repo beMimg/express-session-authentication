@@ -5,8 +5,22 @@ var cookieParser = require("cookie-parser");
 var logger = require("morgan");
 const mongoose = require("mongoose");
 var indexRouter = require("./routes/index");
+require("dotenv").config();
+const session = require("express-session");
+const MongoStore = require("connect-mongo");
+const passport = require("passport");
 
 var app = express();
+
+async function connectToDatabase() {
+  try {
+    await mongoose.connect(process.env.MONGODB_URI);
+    console.log("connected to db");
+  } catch (err) {
+    return next(err);
+  }
+}
+connectToDatabase();
 
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "pug");
@@ -16,6 +30,22 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: true,
+    store: MongoStore.create({
+      mongoUrl: process.env.MONGODB_URI,
+    }),
+    cookie: {
+      maxAge: 1000 * 60 * 60 * 24,
+    },
+  })
+);
+// use passport middleware
+require("./config/passport");
+app.use(passport.session());
 
 app.use("/", indexRouter);
 
