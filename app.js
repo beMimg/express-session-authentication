@@ -30,6 +30,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
+// session not in memory but in a database, in a collection named sessions
 app.use(
   session({
     secret: process.env.SESSION_SECRET,
@@ -43,8 +44,10 @@ app.use(
     },
   })
 );
+
 // use passport middleware
 require("./config/passport");
+// this will allow passport to attach user object in session object
 app.use(passport.session());
 
 app.use("/", indexRouter);

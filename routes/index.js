@@ -14,6 +14,7 @@ router.get("/login", (req, res, next) => {
   res.render("login");
 });
 
+// post request will either authenticate or not, calling LocalStrategy in ../config/passport
 router.post(
   "/login",
   passport.authenticate("local", {
